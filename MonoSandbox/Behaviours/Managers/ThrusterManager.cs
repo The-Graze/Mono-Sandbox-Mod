@@ -1,9 +1,10 @@
 ﻿using MonoSandbox;
 using MonoSandbox.Behaviours;
+using Photon.Pun;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ThrusterManager : MonoBehaviour
+public class ThrusterManager : MonoBehaviourPunCallbacks
 {
     public List<GameObject> objectList = new List<GameObject>();
 

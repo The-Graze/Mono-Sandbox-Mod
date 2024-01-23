@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using Photon.Pun;
+using UnityEngine;
 
 namespace MonoSandbox.Behaviours
 {
-    public class Enemy : MonoBehaviour
+    public class Enemy : MonoBehaviourPunCallbacks
     {
         public float Health = 20, Defence = 2;
         private bool _isAttacking;

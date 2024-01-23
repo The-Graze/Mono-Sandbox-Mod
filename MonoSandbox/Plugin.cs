@@ -111,15 +111,21 @@ namespace MonoSandbox
 
         public void OnGameInitialized(object sender, EventArgs e)
         {
+            Debug.Log("Network Mod by: adze orangery");
             gameObject.AddComponent<InputHandling>();
 
             _layerMask = Player.Instance.locomotionEnabledLayers;
             _layerMask |= 1 << 8;
-
-            _itemsContainer = Instantiate(new GameObject());
+            GameObject.Find("Environment Objects/PersistentObjects_Prefab").transform.GetChild(5).gameObject.SetActive(true);
+            _itemsContainer = GameObject.Find("Environment Objects/PersistentObjects_Prefab/Halloween Ghost/FloatingChaseSkeleton");   
+            _itemsContainer.transform.SetParent(null, false);
             _itemsContainer.transform.position = Vector3.zero;
             _itemsContainer.name = "ItemFolderMono";
+            Destroy(_itemsContainer.GetComponent<HalloweenGhostChaser>());
+            Destroy(_itemsContainer.transform.GetChild(0));
+            _itemsContainer.AddComponent<NetMan>();
             RefCache.SandboxContainer = _itemsContainer;
+            
 
             _bundle = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("MonoSandbox.Assets.sandboxbundle"));
 

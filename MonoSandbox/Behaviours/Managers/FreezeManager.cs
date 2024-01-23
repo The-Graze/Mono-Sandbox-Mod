@@ -1,8 +1,9 @@
 ﻿using MonoSandbox;
 using MonoSandbox.Behaviours;
+using Photon.Pun;
 using UnityEngine;
 
-public class FreezeManager : MonoBehaviour
+public class FreezeManager : MonoBehaviourPunCallbacks
 {
     bool primaryDown;
     bool canPlace;

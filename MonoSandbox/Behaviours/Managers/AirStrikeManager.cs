@@ -2,12 +2,14 @@
 using MonoSandbox.Behaviours;
 using UnityEngine;
 using Photon.Pun;
-public class AirStrikeManager : MonoBehaviour
+using System;
+using ExitGames.Client.Photon;
+using Photon.Realtime;
+public class AirStrikeManager : MonoBehaviourPunCallbacks
 {
     public bool primaryDown, canPlace, editMode;
     public GameObject Cursor, AirStrikeModel, CursorModel, ExplodeModel;
     GameObject itemsFolder = null;
-
     public void Start()
     {
         itemsFolder = gameObject;
@@ -23,8 +25,6 @@ public class AirStrikeManager : MonoBehaviour
         Airstrike airstrikeControl = Missile.AddComponent<Airstrike>();
         airstrikeControl.StrikeLocation = pos;
         airstrikeControl.ExplosionOBJ = ExplodeModel;
-
-        HapticManager.Haptic(HapticManager.HapticType.Create);
     }
 
     public void Update()
@@ -40,8 +40,17 @@ public class AirStrikeManager : MonoBehaviour
             {
                 if (canPlace)
                 {
-                    GorillaTagger.Instance.myVRRig.RPC("SpawnAirStrike", RpcTarget.All, hitInfo.point);
-                    canPlace = false;
+                    Debug.Log("Attemtping to call Air strike RPC");
+                    try
+                    {
+                        photonView.RPC("SpawnAirStrike", RpcTarget.AllViaServer, hitInfo.point);
+                        HapticManager.Haptic(HapticManager.HapticType.Create);
+                        canPlace = false;
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError("Spawn Error calling RPC with: " + e.Message);
+                    }
                 }
             }
             else

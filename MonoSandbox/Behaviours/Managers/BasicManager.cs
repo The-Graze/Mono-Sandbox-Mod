@@ -1,11 +1,14 @@
 ﻿using MonoSandbox;
 using MonoSandbox.Behaviours;
 using UnityEngine;
-
+using Photon.Pun;
 public class BoxManager : PlacementHandling
 {
     public bool IsPlane;
-
+    void Start()
+    {
+        _Name = "Box";
+    }
     public override GameObject CursorRef
     {
         get
@@ -25,10 +28,13 @@ public class BoxManager : PlacementHandling
         Cursor.transform.forward = hitInfo.normal;
     }
 
-    public override void Activated(RaycastHit hitInfo)
+    public override void Activated(Vector3 normal, Vector3 point, string name)
     {
-        base.Activated(hitInfo);
-
+        base.Activated(normal, point, _Name);
+    }
+    [PunRPC]
+    void SpawnBox(Vector3 normal, Vector3 point)
+    {
         if (!IsPlane)
         {
             GameObject Box = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -45,8 +51,8 @@ public class BoxManager : PlacementHandling
             BoxRB.useGravity = true;
             BoxRB.mass = 2.5f;
 
-            Box.transform.forward = hitInfo.normal;
-            Box.transform.position = hitInfo.point + Box.transform.forward / 4;
+            Box.transform.forward = normal;
+            Box.transform.position = point + Box.transform.forward / 4;
             Box.GetComponent<Renderer>().material = RefCache.Default;
             Box.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
         }
@@ -66,8 +72,8 @@ public class BoxManager : PlacementHandling
             BoxRB.useGravity = true;
             BoxRB.mass = 2.5f;
 
-            Box.transform.forward = hitInfo.normal;
-            Box.transform.position = hitInfo.point + Box.transform.forward / 4;
+            Box.transform.forward = normal;
+            Box.transform.position = point + Box.transform.forward / 4;
             Box.GetComponent<Renderer>().material = RefCache.Default;
             Box.transform.localScale = new Vector3(0.6f, 0.6f, 0.1f);
         }
@@ -106,11 +112,9 @@ public class SphereManager : PlacementHandling
         Cursor.transform.position = hitInfo.point + Cursor.transform.forward / 4;
         Cursor.transform.forward = hitInfo.normal;
     }
-
-    public override void Activated(RaycastHit hitInfo)
+    [PunRPC]
+    public override void Activated(Vector3 normal, Vector3 point, string name)
     {
-        base.Activated(hitInfo);
-
         if (!IsSoftbody && !IsEnemy)
         {
             GameObject Ball = GameObject.CreatePrimitive(PrimitiveType.Sphere);
@@ -127,8 +131,8 @@ public class SphereManager : PlacementHandling
             BallRB.useGravity = true;
             BallRB.mass = 3.5f;
 
-            Ball.transform.forward = hitInfo.normal;
-            Ball.transform.position = hitInfo.point + Ball.transform.forward / 4;
+            Ball.transform.forward = normal;
+            Ball.transform.position = point + Ball.transform.forward / 4;
             Ball.GetComponent<Renderer>().material = RefCache.Default;
             Ball.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
         }
@@ -144,8 +148,8 @@ public class SphereManager : PlacementHandling
                 g.name += "MonoObject";
             }
 
-            Ball.transform.forward = hitInfo.normal;
-            Ball.transform.position = hitInfo.point + Ball.transform.forward / 4;
+            Ball.transform.forward = normal;
+            Ball.transform.position = point + Ball.transform.forward / 4;
             Ball.transform.GetChild(1).GetComponent<Renderer>().material = RefCache.Default;
             Ball.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
             Ball.AddComponent<BoneSphere>();
@@ -162,7 +166,7 @@ public class SphereManager : PlacementHandling
             enemy.Defence = 1.75f;
 
             Ball.transform.SetParent(SandboxContainer.transform, false);
-            Ball.transform.position = hitInfo.point + Vector3.up / 2f;
+            Ball.transform.position = point + Vector3.up / 2f;
         }
     }
 }
@@ -195,11 +199,9 @@ public class BeanManager : PlacementHandling
         Cursor.transform.position = hitInfo.point + Cursor.transform.up / 4.5f;
         Cursor.transform.up = hitInfo.normal;
     }
-
-    public override void Activated(RaycastHit hitInfo)
+    [PunRPC]
+    public override void Activated(Vector3 normal, Vector3 point, string name)
     {
-        base.Activated(hitInfo);
-
         if (IsBarrel)
         {
             GameObject Bean = Instantiate(Barrel);
@@ -220,8 +222,8 @@ public class BeanManager : PlacementHandling
             BallRB.useGravity = true;
             BallRB.mass = 3.5f;
 
-            Bean.transform.up = hitInfo.normal;
-            Bean.transform.position = hitInfo.point + Bean.transform.up / 2.5f;
+            Bean.transform.up = normal;
+            Bean.transform.position = point + Bean.transform.up / 2.5f;
             Bean.transform.localScale = new Vector3(15f, 15f, 15f);
         }
         else if (IsWheel)
@@ -241,8 +243,8 @@ public class BeanManager : PlacementHandling
             BallRB.useGravity = true;
             BallRB.mass = 3.5f;
 
-            Bean.transform.up = hitInfo.normal;
-            Bean.transform.position = hitInfo.point + Bean.transform.up / 2.5f;
+            Bean.transform.up = normal;
+            Bean.transform.position = point + Bean.transform.up / 2.5f;
             Bean.GetComponent<Renderer>().material = RefCache.Default;
         }
         else
@@ -261,8 +263,8 @@ public class BeanManager : PlacementHandling
             BallRB.useGravity = true;
             BallRB.mass = 3.5f;
 
-            Bean.transform.up = hitInfo.normal;
-            Bean.transform.position = hitInfo.point + Bean.transform.up / 2.5f;
+            Bean.transform.up = normal;
+            Bean.transform.position = point + Bean.transform.up / 2.5f;
             Bean.GetComponent<Renderer>().material = RefCache.Default;
             Bean.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
         }
@@ -291,11 +293,9 @@ public class BathManager : PlacementHandling
         Cursor.transform.position = hitInfo.point + Cursor.transform.forward / 4;
         Cursor.transform.forward = hitInfo.normal;
     }
-
-    public override void Activated(RaycastHit hitInfo)
+    [PunRPC]
+    public override void Activated(Vector3 normal, Vector3 point, string name)
     {
-        base.Activated(hitInfo);
-
         GameObject BathObject = Instantiate(Bath);
         Rigidbody BathRB = BathObject.AddComponent<Rigidbody>();
         BathObject.layer = 8;
@@ -305,8 +305,8 @@ public class BathManager : PlacementHandling
         BathRB.useGravity = true;
         BathRB.mass = 8f;
 
-        BathObject.transform.forward = hitInfo.normal;
-        BathObject.transform.position = hitInfo.point + BathObject.transform.forward / 4;
+        BathObject.transform.forward = normal;
+        BathObject.transform.position = point + BathObject.transform.forward / 4;
         BathObject.transform.localScale = new Vector3(20f, 20f, 20f);
     }
 }
@@ -333,10 +333,9 @@ public class CrateManager : PlacementHandling
         Cursor.transform.position = hitInfo.point + Cursor.transform.forward / 4;
         Cursor.transform.forward = hitInfo.normal;
     }
-
-    public override void Activated(RaycastHit hitInfo)
+    [PunRPC]
+    public override void Activated(Vector3 normal, Vector3 point, string name)
     {
-        base.Activated(hitInfo);
 
         GameObject CrateObject = Instantiate(Crate);
         Rigidbody BoxRB = CrateObject.AddComponent<Rigidbody>();
@@ -351,8 +350,8 @@ public class CrateManager : PlacementHandling
 
         BoxRB.useGravity = true;
         BoxRB.mass = 2.5f;
-        CrateObject.transform.forward = hitInfo.normal;
-        CrateObject.transform.position = hitInfo.point + CrateObject.transform.forward / 4;
+        CrateObject.transform.forward = normal;
+        CrateObject.transform.position = point + CrateObject.transform.forward / 4;
     }
 }
 
@@ -377,11 +376,9 @@ public class CouchManager : PlacementHandling
 
         Cursor.transform.position = hitInfo.point + Vector3.up * 0.4f;
     }
-
-    public override void Activated(RaycastHit hitInfo)
+    [PunRPC]
+    public override void Activated(Vector3 normal, Vector3 point, string name)
     {
-        base.Activated(hitInfo);
-
         GameObject CouchObject = Instantiate(Couch);
         Rigidbody CouchRB = CouchObject.AddComponent<Rigidbody>();
         CouchObject.layer = 8;
@@ -392,7 +389,7 @@ public class CouchManager : PlacementHandling
         CouchRB.useGravity = true;
         CouchRB.mass = 8f;
 
-        CouchObject.transform.position = hitInfo.point + Vector3.up * 0.4f;
+        CouchObject.transform.position = point + Vector3.up * 0.4f;
         CouchObject.transform.localScale = new Vector3(100f, 100f, 100f);
     }
 }
@@ -404,10 +401,9 @@ public class Explode : MonoBehaviour
     public float Multiplier;
     private bool Exploding = true;
 
+    [PunRPC]
     public void ExplodeObject()
     {
-        if (Exploding)
-        {
             Exploding = false;
 
             gameObject.GetComponent<AudioSource>().Play();
@@ -434,9 +430,8 @@ public class Explode : MonoBehaviour
             PlayerRigidbody.AddExplosionForce(2500f * Multiplier * Mathf.Sqrt(PlayerRigidbody.mass), transform.position, 5 + (0.75f * Multiplier));
 
             Invoke(nameof(Destroy), 3);
-        }
     }
-
+    [PunRPC]
     void Delete()
     {
         Destroy(gameObject);

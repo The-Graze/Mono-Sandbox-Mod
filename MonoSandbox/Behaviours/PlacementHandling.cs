@@ -1,20 +1,23 @@
-﻿using UnityEngine;
+﻿using Photon.Pun;
+using UnityEngine;
 
 namespace MonoSandbox.Behaviours
 {
     /// <summary>
     /// A base used for placing objects with MonoSandbox
     /// </summary>
-    public class PlacementHandling : MonoBehaviour
+    public class PlacementHandling : MonoBehaviourPunCallbacks
     {
         public float Offset = 4f;
         public bool IsEditing, IsActivated, Placed;
         public GameObject Cursor, SandboxContainer;
+        public string _Name;
 
         public virtual GameObject CursorRef { get; }
-
-        public virtual void Activated(RaycastHit hitInfo)
+        [PunRPC]
+        public virtual void Activated(Vector3 normal, Vector3 point, string name)
         {
+            photonView.RPC("Spawn" + _Name, RpcTarget.AllViaServer, normal, point, this.ToString());
             HapticManager.Haptic(HapticManager.HapticType.Create);
         }
 
@@ -58,7 +61,8 @@ namespace MonoSandbox.Behaviours
                 if (IsActivated && !Placed)
                 {
                     Placed = true;
-                    Activated(hitInfo);
+                    Debug.Log("Spawned onject from: " + this.ToString());
+                    Activated(hitInfo.normal, hitInfo.normal, _Name);
                 }
                 else if (!IsActivated && Placed)
                 {

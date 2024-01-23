@@ -1,11 +1,12 @@
 ﻿using MonoSandbox;
 using MonoSandbox.Behaviours;
+using Photon.Pun;
 using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.XR;
 
-public class WeaponManager : MonoBehaviour
+public class WeaponManager : MonoBehaviourPunCallbacks
 {
     public float weaponForce = 4f;
     private float trigger, lastShot;

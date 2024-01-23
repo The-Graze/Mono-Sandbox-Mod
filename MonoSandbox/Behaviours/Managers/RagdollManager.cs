@@ -1,5 +1,6 @@
 ﻿using GorillaTag;
 using MonoSandbox.Behaviours;
+using Photon.Pun;
 using UnityEngine;
 
 public class RagdollManager : PlacementHandling
@@ -30,48 +31,52 @@ public class RagdollManager : PlacementHandling
         Cursor.transform.position = hitInfo.point + Vector3.up * 0.15f;
     }
 
-    public override void Activated(RaycastHit hitInfo)
+    [PunRPC]
+    public override void Activated(Vector3 normal, Vector3 point, string name)
     {
-        base.Activated(hitInfo);
-
-        if (UseGorilla)
+        if (this.ToString() == name)
         {
-            GameObject Ragdoll = Instantiate(Gorilla);
-            Ragdoll.name += "MonoObject_Ragdoll";
-            Ragdoll.transform.SetParent(SandboxContainer.transform, false);
 
-            foreach (Transform g in Ragdoll.transform.GetChild(1).GetComponentsInChildren<Transform>())
+            base.Activated(normal, point, this.ToString());
+            if (UseGorilla)
             {
-                g.gameObject.layer = 8;
-                g.name = string.Concat(g.name, "MonoObject");
+                GameObject Ragdoll = Instantiate(Gorilla);
+                Ragdoll.name += "MonoObject_Ragdoll";
+                Ragdoll.transform.SetParent(SandboxContainer.transform, false);
+
+                foreach (Transform g in Ragdoll.transform.GetChild(1).GetComponentsInChildren<Transform>())
+                {
+                    g.gameObject.layer = 8;
+                    g.name = string.Concat(g.name, "MonoObject");
+                }
+
+                Ragdoll.transform.position = point + new Vector3(0f, 0.45f, 0f);
+
+                GTColor.HSVRanges ragdollRanges = new GTColor.HSVRanges(0f, 1f, 0.8f, 0.6f, 1f, 1f);
+                Material ragdollMaterial = new Material(Ragdoll.transform.GetChild(0).GetComponent<SkinnedMeshRenderer>().material)
+                {
+                    color = GTColor.RandomHSV(ragdollRanges)
+                };
+                Ragdoll.GetComponentInChildren<SkinnedMeshRenderer>().material = ragdollMaterial;
             }
-
-            Ragdoll.transform.position = hitInfo.point + new Vector3(0f, 0.45f, 0f);
-
-            GTColor.HSVRanges ragdollRanges = new GTColor.HSVRanges(0f, 1f, 0.8f, 0.6f, 1f, 1f);
-            Material ragdollMaterial = new Material(Ragdoll.transform.GetChild(0).GetComponent<SkinnedMeshRenderer>().material)
+            else
             {
-                color = GTColor.RandomHSV(ragdollRanges)
-            };
-            Ragdoll.GetComponentInChildren<SkinnedMeshRenderer>().material = ragdollMaterial;
-        }
-        else
-        {
-            GameObject Ragdoll = Instantiate(Body);
-            Ragdoll.name += "MonoObject_Ragdoll";
-            Ragdoll.transform.SetParent(SandboxContainer.transform, false);
+                GameObject Ragdoll = Instantiate(Body);
+                Ragdoll.name += "MonoObject_Ragdoll";
+                Ragdoll.transform.SetParent(SandboxContainer.transform, false);
 
-            foreach (Transform g in Ragdoll.transform.GetChild(0).GetComponentsInChildren<Transform>())
-            {
-                g.gameObject.layer = 8;
-                g.name = string.Concat(g.name, "MonoObject");
+                foreach (Transform g in Ragdoll.transform.GetChild(0).GetComponentsInChildren<Transform>())
+                {
+                    g.gameObject.layer = 8;
+                    g.name = string.Concat(g.name, "MonoObject");
+                }
+
+                Ragdoll.transform.position = point + new Vector3(0f, 0.6f, 0f);
+                Ragdoll.transform.localScale = new Vector3(0.4f, 0.4f, 0.5f);
+                Ragdoll.transform.GetChild(1).GetComponent<Renderer>().material.color = Color.grey;
+
+                Destroy(Ragdoll.GetComponent<MeshCollider>());
             }
-
-            Ragdoll.transform.position = hitInfo.point + new Vector3(0f, 0.6f, 0f);
-            Ragdoll.transform.localScale = new Vector3(0.4f, 0.4f, 0.5f);
-            Ragdoll.transform.GetChild(1).GetComponent<Renderer>().material.color = Color.grey;
-
-            Destroy(Ragdoll.GetComponent<MeshCollider>());
         }
     }
 }

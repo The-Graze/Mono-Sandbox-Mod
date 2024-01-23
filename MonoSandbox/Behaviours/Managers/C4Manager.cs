@@ -1,9 +1,10 @@
 ﻿using MonoSandbox;
 using MonoSandbox.Behaviours;
+using Photon.Pun;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class C4Manager : MonoBehaviour
+public class C4Manager : MonoBehaviourPunCallbacks
 {
     public bool primaryDown, canPlace, editMode, IsMine;
     public float multiplier = 4;

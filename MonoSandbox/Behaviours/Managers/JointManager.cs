@@ -1,10 +1,11 @@
 ﻿using MonoSandbox;
 using MonoSandbox.Behaviours;
+using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SpringManager : MonoBehaviour
+public class SpringManager : MonoBehaviourPunCallbacks
 {
     public List<GameObject> objectList = new List<GameObject>();
 
