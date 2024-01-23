@@ -1,7 +1,7 @@
 ﻿using MonoSandbox;
 using MonoSandbox.Behaviours;
 using UnityEngine;
-
+using Photon.Pun;
 public class AirStrikeManager : MonoBehaviour
 {
     public bool primaryDown, canPlace, editMode;
@@ -11,6 +11,20 @@ public class AirStrikeManager : MonoBehaviour
     public void Start()
     {
         itemsFolder = gameObject;
+    }
+
+    [PunRPC]
+    void SpawnAirStrike(Vector3 pos)
+    {
+        GameObject Missile = Instantiate(AirStrikeModel);
+        Missile.transform.SetParent(itemsFolder.transform, false);
+        Missile.transform.position = pos + new Vector3(0, 80f, 0);
+        Missile.transform.localScale = new Vector3(50f, 50f, 50f);
+        Airstrike airstrikeControl = Missile.AddComponent<Airstrike>();
+        airstrikeControl.StrikeLocation = pos;
+        airstrikeControl.ExplosionOBJ = ExplodeModel;
+
+        HapticManager.Haptic(HapticManager.HapticType.Create);
     }
 
     public void Update()
@@ -26,15 +40,7 @@ public class AirStrikeManager : MonoBehaviour
             {
                 if (canPlace)
                 {
-                    GameObject Missile = Instantiate(AirStrikeModel);
-                    Missile.transform.SetParent(itemsFolder.transform, false);
-                    Missile.transform.position = hitInfo.point + new Vector3(0, 80f, 0);
-                    Missile.transform.localScale = new Vector3(50f, 50f, 50f);
-                    Airstrike airstrikeControl = Missile.AddComponent<Airstrike>();
-                    airstrikeControl.StrikeLocation = hitInfo.point;
-                    airstrikeControl.ExplosionOBJ = ExplodeModel;
-
-                    HapticManager.Haptic(HapticManager.HapticType.Create);
+                    GorillaTagger.Instance.myVRRig.RPC("SpawnAirStrike", RpcTarget.All, hitInfo.point);
                     canPlace = false;
                 }
             }
