@@ -11,13 +11,11 @@ namespace MonoSandbox.Behaviours
         public float Offset = 4f;
         public bool IsEditing, IsActivated, Placed;
         public GameObject Cursor, SandboxContainer;
-        public string _Name;
 
         public virtual GameObject CursorRef { get; }
         [PunRPC]
         public virtual void Activated(Vector3 normal, Vector3 point, string name)
         {
-            photonView.RPC("Spawn" + _Name, RpcTarget.AllViaServer, normal, point, this.ToString());
             HapticManager.Haptic(HapticManager.HapticType.Create);
         }
 
@@ -62,7 +60,7 @@ namespace MonoSandbox.Behaviours
                 {
                     Placed = true;
                     Debug.Log("Spawned onject from: " + this.ToString());
-                    Activated(hitInfo.normal, hitInfo.normal, _Name);
+                    photonView.RPC("Activated", RpcTarget.AllViaServer, hitInfo.normal, hitInfo.point, this.ToString());
                 }
                 else if (!IsActivated && Placed)
                 {
